@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+    <style>
+        table,thead,tr,td{
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1>Madding</h1>
+        <h4>
+            Username : <input type="text" name="login" id="username" /><br><br>
+            Password : <input type="text" name="login" id="password" />
+        </h4>
+        <input type="button" value="login" onclick="login()" />
+        <br>
+        <br>
+        <table>
+            <thead>
+                <td>No</td>
+                <td>Kegiatan</td>
+                <td>Hari</td>
+                <td>Poster</td>
+                <td>Act</td>
+            </thead>
+            <tbody id="isi">
+    
+            </tbody>
+        </table>
+        <h1 id="alert">
+
+        </h1>
+    </center>
+    
+    
+</body>
+<script>
+    
+    class Menu{
+        constructor(kegiatan, hari, poster){
+            this.kegiatan = kegiatan,
+            this.hari = hari,
+            this.poster = poster
+        }
+    };
+    var isiMadding = [
+        new Menu("Lari", "Senin", "url"),
+        new Menu("Estafet", "Selasa", "url"),
+    ];
+    
+    class UserData{
+        constructor(username, password, role){
+            this.username = username,
+            this.password = password,
+            this.role = role
+        }
+    };
+
+    var user = [
+        new UserData("admin", "admin", "admin"),
+        new UserData("user", "user", "user")
+    ]
+
+    function login(){
+        var uname = document.getElementById("username").value;
+        var pass = document.getElementById("password").value;
+        for (var i = 0; i<=user.length; i++){
+            if (uname === user[i].username && pass === user[i].password){
+                if (user[i].role === "admin"){
+                    adminContent();
+                    return document.getElementById("alert").innerHTML = "Admin"
+                }else if(user[i].role === "user"){
+                    userContent();
+                    return document.getElementById("alert").innerHTML = "User"
+                }
+            }else{
+                document.getElementById("alert").innerHTML = "Password Salah"
+            }
+
+        }
+    };
+
+    function userContent(){
+            var output = "";
+            for (var i = 0; i<isiMadding.length; i++){
+                output += 
+                `
+                <tr>
+                    <td>${i+1}</td>
+                    <td>${isiMadding[i].kegiatan}</td>
+                    <td>${isiMadding[i].hari}</td>
+                    <td><img src="${isiMadding[i].poster}" alt="gambar ${isiMadding[i].kegiatan}" width="100px" /></td>
+                    <td></td>
+                </tr>
+                `
+            };         
+            return document.getElementById("isi").innerHTML = output
+    }
+
+    function adminContent(){
+            var output = "";
+            for (var i = 0; i<isiMadding.length; i++){
+                output += 
+                `
+                <tr id="${i}">
+                    <td>${i+1}</td>
+                    <td>${isiMadding[i].kegiatan}</td>
+                    <td>${isiMadding[i].hari}</td>
+                    <td><img src="${isiMadding[i].poster}" alt="gambar ${isiMadding[i].kegiatan}" width="100px" /></td>
+                    <td>
+                        <input type="button" id="delete "value="Delete" onclick="deleteMadding(${i})" />
+                        <input type="button" id="edit "value="Edit" onclick="editMadding(${i})" />
+                    </td>
+                </tr>
+                `
+            };         
+            return document.getElementById("isi").innerHTML = output +
+            `<tr>
+                <td></td>
+                <td><input type="text" id="namaKegiatan"/></td>
+                <td><input type="text" id="hari"/></td>
+                <td><input type="text" id="poster"/></td>
+                <td><input type="button" value="Add new" onclick="addMadding()"/></td>
+            </tr>
+            `
+    } 
+
+    function addMadding(){
+        var output = []
+        var kegiatan = document.getElementById("namaKegiatan").value;
+        var hari = document.getElementById("hari").value;
+        var poster = document.getElementById("poster").value;
+        if (kegiatan == "" || hari == "" || poster == ""){
+            alert("Please fill the blank")
+        }else{
+            isiMadding.push(new Menu(kegiatan, hari, poster));
+            adminContent()
+        }
+    }
+
+    function saveEdit(index){
+            var newKegiatan = document.getElementById("newKegiatan").value;
+            var newHari = document.getElementById("newHari").value;
+            var newPoster = document.getElementById("newPoster").value;
+            isiMadding[index].kegiatan = newKegiatan;
+            isiMadding[index].hari = newHari;
+            isiMadding[index].poster = newPoster;
+            adminContent()
+    }
+
+    function editMadding(index){
+        adminContent();
+        output = ""
+        for (var i = 0; i<1; i++){
+            output += 
+            `<tr>
+                <td> ${index+1} </td>
+                <td> <input type="text" id="newKegiatan" /> </td>
+                <td> <input type="text" id="newHari" /> </td>
+                <td> <input type="text" id="newPoster" /> </td>
+                <td> 
+                    <input type="button" value="cancel" onclick="adminContent(${index})" >
+                    <input type="button" value="save" onclick="saveEdit(${index})" />
+                </td>
+                
+            </tr>
+            `
+        }
+        document.getElementById(index).innerHTML = output
+    }
+    function deleteMadding(index){
+        adminContent();
+        output = ""
+        for (var i = 0; i<1; i++){
+            output += 
+            `<tr>
+                <td>${index+1}</td>
+                <td>${isiMadding[i].kegiatan}</td>
+                <td>${isiMadding[i].hari}</td>
+                <td><img src="${isiMadding[i].poster}" alt="gambar ${isiMadding[i].kegiatan}" width="100px" /></td>
+                <td> 
+                    <input type="button" value="no" onclick="adminContent(${index})" >
+                    <input type="button" value="yes" onclick="deleteContent(${index})" />
+                </td>
+                
+            </tr>
+            `
+        }
+        document.getElementById(index).innerHTML = output
+        
+    }
+    function deleteContent(index){
+        isiMadding.splice(isiMadding[index], 1);
+        adminContent()
+    }
+
+</script>
+</html>
+
+<!-- <select name="madding" id="senin" value="senin" selected>Senin</select>
+                    <select name="madding" id="selasa">Selasa</select>
+                    <select name="madding" id="rabu">Rabu</select>
+                    <select name="madding" id="kamis">Kamis</select>
+                    <select name="madding" id="jumat">Jum'at</select>
+                    <select name="madding" id="sabtu">Sabtu</select>
+                    <select name="madding" id="minggu">Minggu</select> -->
